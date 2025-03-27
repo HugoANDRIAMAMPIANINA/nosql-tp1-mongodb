@@ -7,10 +7,36 @@ export const getProfiles = async (
   res: Response
 ): Promise<any> => {
   try {
-    const users = await User.find();
+    const { skills, location, name, company } = req.query;
+
+    // Initialize the query filter
+    const filter: any = {};
+
+    if (typeof skills === "string") {
+      filter.skills = { $in: skills.split(",") }; // filter if a user has at least 1 skill of the list
+    }
+
+    if (typeof location === "string") {
+      filter["information.location"] = { $eq: location };
+    }
+
+    if (typeof name === "string") {
+      filter.name = { $eq: name };
+    }
+
+    if (typeof company === "string") {
+      filter["experience.company"] = { $eq: company };
+    }
+
+    if (typeof company === "string") {
+      filter["experience.company"] = { $eq: company };
+    }
+
+    const users = await User.find(filter);
     res.json(users);
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.log(error);
+    res.status(500).json({ error: error });
   }
 };
 

@@ -1,6 +1,14 @@
 version: '3.8'
 
 services:
+  api:
+    build: .
+    container_name: api_container
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    env_file: ".env"
   mongo:
     image: mongo:latest
     container_name: mongo_container
