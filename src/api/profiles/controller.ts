@@ -188,16 +188,26 @@ export const createSkill = async (
   res: Response
 ): Promise<any> => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
+    const { skill } = req.body;
+
+    if (!skill) {
+      return res.status(400).json({ error: "Skill is required." });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { $push: { skills: skill } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    user.skills.push(req.body.skill);
-    await user.save();
-    res.json(user);
+    res.json(updatedUser);
   } catch (error) {
-    res.status(400).json({ error: "Invalid data" });
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
